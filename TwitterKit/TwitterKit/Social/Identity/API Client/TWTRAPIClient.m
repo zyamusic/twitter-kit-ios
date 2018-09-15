@@ -62,6 +62,8 @@ static NSString *const TWTRAPIConstantsCreateCardPath = @"/v2/cards/create.json"
 
 static NSString *const TWTRMediaIDStringKey = @"media_id_string";
 
+#define VIDEO_CHUNK_SIZE 5000000
+
 static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
 
 @implementation TWTRAPIClient
@@ -215,7 +217,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
     TWTRParameterAssertOrReturn(completion);
 
     NSString *videoSize = @(videoData.length).stringValue;
-    NSString *videoString = [videoData base64EncodedStringWithOptions:0];
+//    NSString *videoString = [videoData base64EncodedStringWithOptions:0];
     NSDictionary *parameters = @{@"command": @"INIT", @"total_bytes": videoSize, @"media_type": @"video/mp4"};
 
     [self uploadWithParameters:parameters
@@ -224,7 +226,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                             completion(nil, error);
                         } else {
                             if ([responseDict objectForKey:TWTRMediaIDStringKey]) {
-                                [self postAppendWithMediaID:responseDict[TWTRMediaIDStringKey] videoString:videoString completion:completion];
+                                [self postAppendWithMediaID:responseDict[TWTRMediaIDStringKey] videoData:videoData segmentIndex:0 bytesProcessed:0 completion:completion];
                             } else {
                                 NSError *missingKeyError = [NSError errorWithDomain:TWTRErrorDomain code:TWTRErrorCodeMissingParameter userInfo:@{NSLocalizedDescriptionKey: @"API returned dictionary but did not have \"media_id_string\""}];
                                 completion(nil, missingKeyError);
@@ -233,20 +235,44 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                     }];
 }
 
-- (void)postAppendWithMediaID:(nonnull NSString *)mediaID videoString:(nonnull NSString *)videoString completion:(TWTRMediaUploadResponseCompletion)completion
+- (void)postAppendWithMediaID:(nonnull NSString *)mediaID videoData:(nonnull NSData *)videoData segmentIndex:(int)segmentIndex bytesProcessed:(int)bytesProcessed completion:(TWTRMediaUploadResponseCompletion)completion
 {
+    if (bytesProcessed == videoData.length ) {
+        printf("RTTWITTER:finalizing");
+        [self postFinalizeWithMediaID:mediaID completion:completion];
+        return;
+    }
+
+    NSData* videoChunk;
+    if (videoData.length > VIDEO_CHUNK_SIZE) {
+        NSRange range = NSMakeRange(segmentIndex * VIDEO_CHUNK_SIZE, VIDEO_CHUNK_SIZE);
+        int maxPos = (int)NSMaxRange(range);
+        if (maxPos >= videoData.length) {
+            range.length = videoData.length - range.location;
+        }
+        videoChunk = [videoData subdataWithRange:range];
+        NSLog(@"\tsegment_index %d: loc=%lu len=%lu", segmentIndex, (unsigned long)range.location, (unsigned long)range.length);
+        printf("RTTWITTER:chunking");
+    } else {
+        printf("RTTWITTER:filling");
+        videoChunk = videoData;
+    }
+
     if (!mediaID) {
         NSError *error = [NSError errorWithDomain:TWTRErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Error: mediaID is required."}];
         completion(nil, error);
         return;
     }
-    NSDictionary *parameters = @{@"command": @"APPEND", @"media_id": mediaID, @"segment_index": @"0", @"media": videoString};
+    NSString *videoString = [videoChunk base64EncodedStringWithOptions:0];
+    NSDictionary *parameters = @{@"command": @"APPEND", @"media_id": mediaID, @"segment_index": [NSString stringWithFormat:@"%d",segmentIndex], @"media": videoString};
     [self uploadWithParameters:parameters
                     completion:^(NSURLResponse *response, id responseObject, NSError *error) {
                         if (error) {
                             completion(nil, error);
                         } else {
-                            [self postFinalizeWithMediaID:mediaID completion:completion];
+                            int processed = bytesProcessed + (int)videoChunk.length;
+                            printf("RTTWITTER:appended");
+                            [self postAppendWithMediaID:mediaID videoData:videoData segmentIndex:segmentIndex + 1 bytesProcessed:processed completion:completion];
                         }
                     }];
 }
@@ -259,14 +285,20 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                         if (error) {
                             completion(nil, error);
                         } else {
-                            completion(mediaID, error);
+                            printf("RTTWITTER:Waiting for 2 seconds");
+                            double delayInSeconds = 5.0;
+                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                completion(mediaID, error);
+                            });
+
                         }
                     }];
 }
 - (void)sendTweetWithText:(NSString *)tweetText videoData:(NSData *)videoData completion:(TWTRSendTweetCompletion)completion
 {
     // Keep the limit to be 5M to qualify for image/media upload, not using separate chunk upload
-    const long long kVideoMaxFileSize = 5 * 1024 * 1024;
+    const long long kVideoMaxFileSize = 512 * 1024 * 1024;
 
     if (videoData == nil) {
         NSLog(@"Error: video data is empty");
@@ -618,7 +650,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
 
     TWTRMultipartFormDocument *doc = [self multipartFormDocumentForMedia:media contentType:contentType];
     NSMutableURLRequest *request = [self partialURLRequestForUploadingMediaWithContentType:doc.contentTypeHeaderField];
-
+    NSLog(@"Value of hello = %@", request);
     [doc loadBodyDataWithCallbackQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                             completion:^(NSData *data) {
                                 request.HTTPBody = data;
