@@ -371,8 +371,6 @@
 		7B154E6E19D33A5300B6B64C /* TWTRBezierPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B154E6C19D33A5300B6B64C /* TWTRBezierPaths.m */; };
 		7B154E7219D34B4700B6B64C /* TWTRBirdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B154E7019D34B4700B6B64C /* TWTRBirdView.m */; };
 		7B964455199BDF27002117B5 /* TWTRKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B964454199BDF27002117B5 /* TWTRKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7FA47ABB214C8C2600D28C06 /* TwitterKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BFE839601ADF23590035CBA1 /* TwitterKit.framework */; };
-		7FA47ABC214C8C3000D28C06 /* TwitterCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D4008831B1D033C0091E4D3 /* TwitterCore.framework */; };
 		9236048719F18F5F00532281 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9236048619F18F5F00532281 /* CoreData.framework */; };
 		92B9AC9119DF359D00E8BC68 /* UserWithEmailResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 92B9AC9019DF359D00E8BC68 /* UserWithEmailResponse.json */; };
 		92B9AC9319DF388E00E8BC68 /* UserWithEmptyEmailResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 92B9AC9219DF388E00E8BC68 /* UserWithEmptyEmailResponse.json */; };
@@ -726,17 +724,6 @@
 			files = (
 				205373651F3295D100FC3CA3 /* MoPub.framework in CopyFiles */,
 				3789B0EB1E96E5D40026BBBC /* OCMock.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7FA47AB8214C8BA700D28C06 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /Users/russelltan/Repos/DittyEmojis/DittyEmojis/CustomFrameworks;
-			dstSubfolderSpec = 0;
-			files = (
-				7FA47ABC214C8C3000D28C06 /* TwitterCore.framework in CopyFiles */,
-				7FA47ABB214C8C2600D28C06 /* TwitterKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2956,7 +2943,6 @@
 				BFE8395C1ADF23590035CBA1 /* Frameworks */,
 				BFE8395D1ADF23590035CBA1 /* Headers */,
 				BFE8395E1ADF23590035CBA1 /* Resources */,
-				7FA47AB8214C8BA700D28C06 /* CopyFiles */,
 			);
 			buildRules = (
 			);
