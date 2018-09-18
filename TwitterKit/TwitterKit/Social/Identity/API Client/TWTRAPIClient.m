@@ -671,7 +671,6 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
 
     TWTRMultipartFormDocument *doc = [self multipartFormDocumentForMedia:media contentType:contentType];
     NSMutableURLRequest *request = [self partialURLRequestForUploadingMediaWithContentType:doc.contentTypeHeaderField];
-    NSLog(@"Value of hello = %@", request);
     [doc loadBodyDataWithCallbackQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                             completion:^(NSData *data) {
                                 request.HTTPBody = data;
