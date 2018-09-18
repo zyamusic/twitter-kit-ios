@@ -61,6 +61,8 @@ static NSString *const TWTRAPIConstantsAPIConfigurationPath = @"/1.1/help/config
 static NSString *const TWTRAPIConstantsCreateCardPath = @"/v2/cards/create.json";
 
 static NSString *const TWTRMediaIDStringKey = @"media_id_string";
+static NSString *const TWTRMediaProcessingStringKey = @"processing_info";
+static NSString *const TWTRMediaProcessingCheckStringKey = @"check_after_secs";
 
 #define VIDEO_CHUNK_SIZE 5000000
 
@@ -217,8 +219,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
     TWTRParameterAssertOrReturn(completion);
 
     NSString *videoSize = @(videoData.length).stringValue;
-//    NSString *videoString = [videoData base64EncodedStringWithOptions:0];
-    NSDictionary *parameters = @{@"command": @"INIT", @"total_bytes": videoSize, @"media_type": @"video/mp4"};
+    NSDictionary *parameters = @{@"command": @"INIT", @"total_bytes": videoSize, @"media_type": @"video/mp4", @"media_category":@"tweet_video"};
 
     [self uploadWithParameters:parameters
                     completion:^(NSURLResponse *response, NSDictionary *responseDict, NSError *error) {
@@ -238,7 +239,6 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
 - (void)postAppendWithMediaID:(nonnull NSString *)mediaID videoData:(nonnull NSData *)videoData segmentIndex:(int)segmentIndex bytesProcessed:(int)bytesProcessed completion:(TWTRMediaUploadResponseCompletion)completion
 {
     if (bytesProcessed == videoData.length ) {
-        printf("RTTWITTER:finalizing");
         [self postFinalizeWithMediaID:mediaID completion:completion];
         return;
     }
@@ -252,9 +252,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
         }
         videoChunk = [videoData subdataWithRange:range];
         NSLog(@"\tsegment_index %d: loc=%lu len=%lu", segmentIndex, (unsigned long)range.location, (unsigned long)range.length);
-        printf("RTTWITTER:chunking");
     } else {
-        printf("RTTWITTER:filling");
         videoChunk = videoData;
     }
 
@@ -271,7 +269,6 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                             completion(nil, error);
                         } else {
                             int processed = bytesProcessed + (int)videoChunk.length;
-                            printf("RTTWITTER:appended");
                             [self postAppendWithMediaID:mediaID videoData:videoData segmentIndex:segmentIndex + 1 bytesProcessed:processed completion:completion];
                         }
                     }];
@@ -285,19 +282,43 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                         if (error) {
                             completion(nil, error);
                         } else {
-                            printf("RTTWITTER:Waiting for 2 seconds");
-                            double delayInSeconds = 5.0;
-                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                            if ([responseDict objectForKey:TWTRMediaProcessingStringKey]) {
+                                double delayInSeconds = [responseDict[TWTRMediaProcessingStringKey][TWTRMediaProcessingCheckStringKey] doubleValue];
+                                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                    [self postFinalizeStatusWithMediaID:mediaID completion:completion];
+                                });
+                            } else {
                                 completion(mediaID, error);
-                            });
-
+                            }
                         }
                     }];
 }
+
+- (void)postFinalizeStatusWithMediaID:(nonnull NSString *)mediaID completion:(TWTRMediaUploadResponseCompletion)completion
+{
+    NSDictionary *parameters = @{@"command": @"STATUS", @"media_id": mediaID};
+    [self uploadStatusWithParameters:parameters
+                          completion:^(NSURLResponse *response, NSDictionary *responseDict, NSError *error) {
+                              if (error) {
+                                  completion(nil, error);
+                              } else {
+                                  if ([responseDict objectForKey:TWTRMediaProcessingStringKey] && [responseDict[TWTRMediaProcessingStringKey][TWTRMediaProcessingCheckStringKey] doubleValue] > 0.0) {
+                                      double delayInSeconds = [responseDict[TWTRMediaProcessingStringKey][TWTRMediaProcessingCheckStringKey] doubleValue];
+                                      dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                                      dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                          [self postFinalizeStatusWithMediaID:mediaID completion:completion];
+                                      });
+                                  } else {
+                                      completion(mediaID, error);
+                                  }
+                              }
+                          }];
+}
+
 - (void)sendTweetWithText:(NSString *)tweetText videoData:(NSData *)videoData completion:(TWTRSendTweetCompletion)completion
 {
-    // Keep the limit to be 5M to qualify for image/media upload, not using separate chunk upload
+    // Keep the limit to be 512M to qualify for image/media upload, not using separate chunk upload
     const long long kVideoMaxFileSize = 512 * 1024 * 1024;
 
     if (videoData == nil) {
@@ -311,7 +332,7 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
         return;
     } else if (videoData.length > kVideoMaxFileSize) {
         NSLog(@"Error: video data is too big");
-        NSError *sizeError = [NSError errorWithDomain:TWTRErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Error: video data is bigger than 5 MB"}];
+        NSError *sizeError = [NSError errorWithDomain:TWTRErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Error: video data is bigger than 512 MB"}];
         completion(nil, sizeError);
         return;
     }
@@ -778,6 +799,11 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
 - (void)uploadWithParameters:(NSDictionary *)parameters completion:(TWTRJSONRequestCompletion)completion
 {
     [self performHTTPMethod:@"POST" onURL:[self uploadURL] expectedType:[NSDictionary class] parameters:parameters completion:completion];
+}
+
+- (void)uploadStatusWithParameters:(NSDictionary *)parameters completion:(TWTRJSONRequestCompletion)completion
+{
+    [self performHTTPMethod:@"GET" onURL:[self uploadURL] expectedType:[NSDictionary class] parameters:parameters completion:completion];
 }
 
 - (void)performHTTPMethod:(nonnull NSString *)method onURL:(NSURL *)url expectedType:(Class)expectedClass parameters:(NSDictionary *)parameters completion:(TWTRJSONRequestCompletion)completion

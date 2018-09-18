@@ -371,6 +371,10 @@
 		7B154E6E19D33A5300B6B64C /* TWTRBezierPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B154E6C19D33A5300B6B64C /* TWTRBezierPaths.m */; };
 		7B154E7219D34B4700B6B64C /* TWTRBirdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B154E7019D34B4700B6B64C /* TWTRBirdView.m */; };
 		7B964455199BDF27002117B5 /* TWTRKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B964454199BDF27002117B5 /* TWTRKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7F22BF6E2150540400AFA40E /* TwitterKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BFE839601ADF23590035CBA1 /* TwitterKit.framework */; };
+		7F22BF6F2150540A00AFA40E /* TwitterCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D4008831B1D033C0091E4D3 /* TwitterCore.framework */; };
+		7F22BF712150697A00AFA40E /* libTwitterKit.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = A97654E518E0B29B00E25169 /* libTwitterKit.a */; };
+		7F22BF722150698200AFA40E /* libTwitterCore.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9D40087F1B1D033C0091E4D3 /* libTwitterCore.a */; };
 		9236048719F18F5F00532281 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9236048619F18F5F00532281 /* CoreData.framework */; };
 		92B9AC9119DF359D00E8BC68 /* UserWithEmailResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 92B9AC9019DF359D00E8BC68 /* UserWithEmailResponse.json */; };
 		92B9AC9319DF388E00E8BC68 /* UserWithEmptyEmailResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 92B9AC9219DF388E00E8BC68 /* UserWithEmptyEmailResponse.json */; };
@@ -724,6 +728,28 @@
 			files = (
 				205373651F3295D100FC3CA3 /* MoPub.framework in CopyFiles */,
 				3789B0EB1E96E5D40026BBBC /* OCMock.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F22BF6B215053E500AFA40E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/russelltan/Downloads/output;
+			dstSubfolderSpec = 0;
+			files = (
+				7F22BF6F2150540A00AFA40E /* TwitterCore.framework in CopyFiles */,
+				7F22BF6E2150540400AFA40E /* TwitterKit.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F22BF702150695B00AFA40E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/russelltan/Downloads/output;
+			dstSubfolderSpec = 0;
+			files = (
+				7F22BF722150698200AFA40E /* libTwitterCore.a in CopyFiles */,
+				7F22BF712150697A00AFA40E /* libTwitterKit.a in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2924,6 +2950,7 @@
 				A97654E218E0B29B00E25169 /* Frameworks */,
 				A97654E318E0B29B00E25169 /* Copy Files */,
 				A976557118E0B87D00E25169 /* Headers */,
+				7F22BF702150695B00AFA40E /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2943,6 +2970,7 @@
 				BFE8395C1ADF23590035CBA1 /* Frameworks */,
 				BFE8395D1ADF23590035CBA1 /* Headers */,
 				BFE8395E1ADF23590035CBA1 /* Resources */,
+				7F22BF6B215053E500AFA40E /* CopyFiles */,
 			);
 			buildRules = (
 			);
