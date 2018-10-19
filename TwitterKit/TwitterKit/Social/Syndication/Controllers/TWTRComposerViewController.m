@@ -60,6 +60,11 @@
     return (TWTRComposerViewController *)[[TWTRSharedComposerWrapper alloc] initWithInitialText:initialText image:image videoURL:videoURL];
 }
 
+- (instancetype)initWithInitialText:(nullable NSString *)initialText previewImage:(nonnull UIImage *)previewImage videoURL:(nonnull NSURL *)videoURL
+{
+    return (TWTRComposerViewController *)[[TWTRSharedComposerWrapper alloc] initWithInitialText:initialText previewImage:previewImage videoURL:videoURL];
+}
+
 - (instancetype)initWithInitialText:(nullable NSString *)initialText image:(nullable UIImage *)image videoData:(nullable NSData *)videoData
 {
     return (TWTRComposerViewController *)[[TWTRSharedComposerWrapper alloc] initWithInitialText:initialText image:image videoData:videoData];
