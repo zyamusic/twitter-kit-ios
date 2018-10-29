@@ -19,7 +19,7 @@
  This header is private to the Twitter Kit SDK and not exposed for public SDK consumption
  */
 
-#import <TwitterKit/TWTRJSONConvertible.h>
+//#import <TwitterKit/TWTRJSONConvertible.h>
 #import "TWTRMediaType.h"
 #import "TWTRTweetEntity.h"
 

@@ -15,9 +15,6 @@
  *
  */
 
-#ifndef TWTRAPIClient_h
-#define TWTRAPIClient_h
-
 #import <UIKit/UIKit.h>
 
 @class TWTRUser;
@@ -257,5 +254,3 @@ typedef void (^TWTRRequestEmailCompletion)(NSString *_Nullable email, NSError *_
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif

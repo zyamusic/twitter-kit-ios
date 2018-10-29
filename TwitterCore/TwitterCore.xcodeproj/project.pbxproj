@@ -1181,6 +1181,7 @@
 				3D98960F1B9621CF00B9CABD /* TWTRTokenOnlyAuthSession.h in Headers */,
 				9D30C5CF1ACE60E200D0B1FA /* TWTRIdentifier.h in Headers */,
 				9D0AE5B71AC7400500884B45 /* TWTRDateUtil.h in Headers */,
+				9DF52D9C1ABB67F6004345D0 /* TWTRColorUtil.h in Headers */,
 				6C37A1CA1B22505900C360B4 /* TWTRCoreLanguage.h in Headers */,
 				3DEEF7C31B7A769A00A1B457 /* TWTRNetworkingConstants.h in Headers */,
 				9DBB70511ABB76BB00ED4051 /* TWTRResourcesUtil.h in Headers */,
@@ -1697,7 +1698,6 @@
 					"$(TARGET_BUILD_DIR)/Headers/",
 					"$(TARGET_BUILD_DIR)/PrivateHeaders/",
 				);
-				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -1714,7 +1714,6 @@
 					"$(TARGET_BUILD_DIR)/Headers/",
 					"$(TARGET_BUILD_DIR)/PrivateHeaders/",
 				);
-				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -1727,7 +1726,6 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.twittercore.ios.test;
-				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -1740,7 +1738,6 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = io.twittercore.ios.test;
-				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -1757,7 +1754,6 @@
 				INFOPLIST_FILE = "TwitterCore-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(TWC_BUNDLE_IDENTIFIER)";
-				SDKROOT = iphoneos;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1775,7 +1771,6 @@
 				INFOPLIST_FILE = "TwitterCore-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(TWC_BUNDLE_IDENTIFIER)";
-				SDKROOT = iphoneos;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

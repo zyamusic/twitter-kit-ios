@@ -15,6 +15,13 @@
  *
  */
 
+#import <TwitterCore/TWTRSession.h>
+#import <TwitterCore/TWTRSessionStore.h>
+#import <UIKit/UIKit.h>
+#import "TWTRAPIClient.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
 #ifndef Twitter
 
 /**
@@ -23,13 +30,7 @@
  */
 #define Twitter TWTRTwitter
 
-#import <TwitterCore/TWTRSession.h>
-#import <TwitterCore/TWTRSessionStore.h>
-#import <UIKit/UIKit.h>
-#import "TWTRAPIClient.h"
-
-NS_ASSUME_NONNULL_BEGIN
-
+#endif
 
 /**
  *  The central class of the Twitter Kit.
@@ -123,5 +124,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif

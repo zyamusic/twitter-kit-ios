@@ -3546,7 +3546,6 @@
 					"$(PROJECT_DIR)/../vendor",
 					"$(PROJECT_DIR)",
 				);
-				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -3559,7 +3558,6 @@
 					"$(PROJECT_DIR)/../vendor",
 					"$(PROJECT_DIR)",
 				);
-				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
