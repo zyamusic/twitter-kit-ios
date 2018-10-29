@@ -219,7 +219,20 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
     TWTRParameterAssertOrReturn(completion);
 
     NSString *videoSize = @(videoData.length).stringValue;
-    NSDictionary *parameters = @{@"command": @"INIT", @"total_bytes": videoSize, @"media_type": @"video/mp4", @"media_category":@"tweet_video"};
+    
+    uint8_t c;
+    [videoData getBytes:&c length:1];
+    
+    NSString *media_category;
+    switch (c) {
+        case 0x47:
+            media_category =  @"tweet_gif";
+            break;
+        default:
+            media_category =  @"tweet_video";
+    }
+    
+    NSDictionary *parameters = @{@"command": @"INIT", @"total_bytes": videoSize, @"media_type": @"video/mp4", @"media_category":media_category};
 
     [self uploadWithParameters:parameters
                     completion:^(NSURLResponse *response, NSDictionary *responseDict, NSError *error) {

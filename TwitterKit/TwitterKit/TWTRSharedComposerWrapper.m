@@ -113,6 +113,29 @@ UIImage *videoThumbnail(NSURL *url)
     return self;
 }
 
+- (instancetype)initWithInitialText:(nullable NSString *)initialText previewImage:(nonnull UIImage *)previewImage videoURL:(nonnull NSURL *)videoURL
+{
+    if ([videoURL.scheme isEqualToString:@"assets-library"]) {
+        NSLog(@"Incorrect video URL format was provided. Use key `UIImagePickerControllerMediaURL` from the `didFinishPickingMediaWithInfo:` info parameter.");
+        return nil;
+    }
+    
+    if (!videoURL || !previewImage) {
+        NSLog(@"Only one attachment type may be provided (image or video).");
+        return nil;
+    }
+    
+    if (self = [self initWithText:initialText image:previewImage attachment:nil]) {
+        if (videoURL) {
+            NSData *videoData = [NSData dataWithContentsOfURL:videoURL];
+            // Must set this after [self init] is called
+            [self.networking prepareVideoData:videoData];
+        }
+    }
+    
+    return self;
+}
+
 - (instancetype)initWithInitialText:(nullable NSString *)initialText image:(nullable UIImage *)image videoData:(nullable NSData *)videoData
 {
     if (videoData && !image) {

@@ -67,6 +67,17 @@ NS_ASSUME_NONNULL_BEGIN
  *  Initialize a composer with pre-filled text and an image or video attachment.
  *
  *  @param initialText (optional) Text with which to pre-fill the composer text.
+ *  @param image (nonnull) Image to add as an attachment.
+ *  @param videoURL (nonnull) Video URL to add as an attachment.
+ *
+ *  Note: Must include a video and preview image
+ */
+- (instancetype)initWithInitialText:(nullable NSString *)initialText previewImage:(nonnull UIImage *)previewImage videoURL:(nonnull NSURL *)videoURL;
+
+/**
+ *  Initialize a composer with pre-filled text and an image or video attachment.
+ *
+ *  @param initialText (optional) Text with which to pre-fill the composer text.
  *  @param image (optional) Image (or preview image) to add as an attachment.
  *  @param videoData (optional) NSData for video asset to add as an attachment.
  *
